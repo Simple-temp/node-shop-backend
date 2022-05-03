@@ -1,10 +1,10 @@
 import express from "express";
-import Data from "./Data.js";
 import cors from "cors";
 import bodyParser from "body-parser"
 import mongoose from "mongoose";
 import dotenv from "dotenv"
 import seedRouter from "./routes/seedRoutes.js";
+import productRouter from "./routes/produtcsRoutes.js";
 
 dotenv.config()
 
@@ -23,28 +23,8 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 app.use("/api/seed", seedRouter)
+app.use("/api/products", productRouter)
 
-app.get("/api/products",(req,res)=>{
-    res.send(Data)
-})
-
-app.get("/api/products/details/:slug",(req,res)=>{
-    const product = Data.find( x => x.slug === req.params.slug)
-    if(product){
-        res.send(product)
-    }else{
-        res.status(404).send({ message : "product not found" })
-    }
-})
-
-app.get("/api/products/cart/:slug",(req,res)=>{
-    const product = Data.find( x => x.slug === req.params.slug)
-    if(product){
-        res.send(product)
-    }else{
-        res.status(404).send({ message : "product not found" })
-    }
-})
 
 const port = process.env.PORT || 5000;
 

@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser"
 import mongoose from "mongoose";
 import dotenv from "dotenv"
 import seedRouter from "./routes/seedRoutes.js";
@@ -22,8 +21,8 @@ mongoose
 
 const app = express()
 app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.use("/api/seed", seedRouter)
 app.use("/api/products", productRouter)
 app.use("/api/users", userRouter)

@@ -38,11 +38,11 @@ userRouter.post(
         console.log(newUser)
         const user = await newUser.save();
         res.send({
-            _id: newUser._id,
-            name: newUser.name,
-            email: newUser.email,
-            isAdmin: newUser.isAdmin,
-            token : generateToken(newUser)
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token : generateToken(user)
         })
     })
 )

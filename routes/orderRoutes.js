@@ -23,6 +23,15 @@ orderRouter.post("/", isAuth ,expressAsyncHandler( async (req, res)=>{
     res.status(201).send({ message : "New order created", order })
 }))
 
+orderRouter.get("/mine", isAuth ,expressAsyncHandler( async (req, res)=>{
+    const orders = await Order.find({ user: req.user._id })
+    if(orders){
+        res.send(orders)
+    }else{
+        res.status(404).send({ message : "orders not found" })
+    }
+}))
+
 orderRouter.get("/:id", isAuth ,expressAsyncHandler( async (req, res)=>{
     const order = await Order.findById(req.params.id)
     if(order){

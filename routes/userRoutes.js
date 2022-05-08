@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-import { generateToken } from "../Utilits.js";
+import { generateToken, isAuth } from "../Utilits.js";
 
 
 const userRouter = express.Router()
@@ -12,13 +12,13 @@ userRouter.post(
     expressAsyncHandler(async (req, res) => {
         const user = await User.findOne({ email: req.body.email })
         if (user) {
-            if (bcrypt.compareSync(req.body.password, user.password)){
+            if (bcrypt.compareSync(req.body.password, user.password)) {
                 res.send({
                     _id: user._id,
                     name: user.name,
                     email: user.email,
                     isAdmin: user.isAdmin,
-                    token : generateToken(user)
+                    token: generateToken(user)
                 })
                 return
             }
@@ -29,11 +29,11 @@ userRouter.post(
 
 userRouter.post(
     "/signup",
-    expressAsyncHandler( async (req, res) =>{
+    expressAsyncHandler(async (req, res) => {
         const newUser = new User({
-            name : req.body.name,
-            email : req.body.email,
-            password : bcrypt.hashSync(req.body.password),
+            name: req.body.name,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password),
         });
         console.log(newUser)
         const user = await newUser.save();
@@ -42,9 +42,36 @@ userRouter.post(
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
-            token : generateToken(user)
+            token: generateToken(user)
         })
     })
 )
+
+userRouter.put(
+    "/profile",
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const user = await User.findById(req.user._id)
+        if (user) {
+            user.name = req.body.name || user.name
+            user.email = req.body.email || user.email
+            if (req.body.password) {
+                user.password = bcrypt.hashSync(req.body.password, 8)
+            }
+            console.log(user)
+            const Updateuser = await user.save();
+            res.send({
+                _id: Updateuser._id,
+                name: Updateuser.name,
+                email: Updateuser.email,
+                isAdmin: Updateuser.isAdmin,
+                token: generateToken(Updateuser)
+            })
+        }else {
+            res.status(404).send({ message: "User not found" })
+        }
+    })
+)
+
 
 export default userRouter

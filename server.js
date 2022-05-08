@@ -39,9 +39,13 @@ app.use((err,req,res,next)=>{
     res.status(500).send({ message : err.message })
 })
 
+app.get("/",(req, res)=>{
+    res.send("its works")
+})
 
-const port = process.env.PORT || 5000;
 
-app.listen(port,()=>{
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT,()=>{
     console.log("running port http://localhost/5000")
 })

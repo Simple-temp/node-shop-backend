@@ -1,1 +1,1 @@
-web: node ../shop-frontend/build/index.html
+web: node server.js

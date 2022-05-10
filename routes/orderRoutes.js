@@ -89,6 +89,20 @@ orderRouter.put("/:id/stripe", async (req, res)=>{
         res.status(404).send({ message : "Payment not complete" })
     }
 
+})
+
+orderRouter.delete("/:id/delete", async (req, res)=>{
+
+    const order = await Order.findById(req.params.id)
+    if(order){
+        console.log(order)
+        await order.deleteOne()
+
+        res.send( { message: "deleted"} )
+    }else{
+        res.status(404).send({ message : "delete not complete" })
+    }
+
 
 })
 

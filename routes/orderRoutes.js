@@ -2,6 +2,9 @@ import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
 import { isAuth } from "../Utilits.js";
+import Stripe from "stripe"
+
+const stripe = Stripe("sk_test_51KJhEFFesKPGWiP3zNJLsNtGy1i22HxxfjJrvJuiYiDMKv8A675V0XqyyId3vKfS4oWnsfXRwH63Y7Lk4H4HuWF8009M1hdt31") 
 
 
 const orderRouter = express.Router()
@@ -57,9 +60,37 @@ orderRouter.put("/:id/pay", isAuth ,expressAsyncHandler( async (req, res)=>{
 
         res.send( { message: "Order paid", order : updateOrder } )
     }else{
-        res.status(404).send({ message : "order not found" })
+        res.status(404).send({ message : "Payment not complete" })
     }
 }))
+
+orderRouter.put("/:id/stripe", async (req, res)=>{
+
+    // const {amount, token} = req.body;
+    // console.log(token)
+
+    const order = await Order.findById(req.params.id)
+    if(order){
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.paymentresult = {
+            id: req.body.id,
+            status: req.body.status,
+            update_time: req.body.update_time,
+            email_address: req.body.email_address,
+        };
+
+        console.log(order)
+
+        const updateOrder = await order.save()
+
+        res.send( { message: "Order paid", order : updateOrder } )
+    }else{
+        res.status(404).send({ message : "Payment not complete" })
+    }
+
+
+})
 
 
 export default orderRouter

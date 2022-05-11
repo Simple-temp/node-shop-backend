@@ -110,4 +110,33 @@ productRouter.get("/cart/:_id", async (req,res)=>{
     }
 })
 
+productRouter.get("/edit/:_id", async (req,res)=>{
+    const product = await Product.findById(req.params._id)
+    if(product){
+        res.send(product)
+    }else{
+        res.status(404).send({ message : "product not found" })
+    }
+})
+
+productRouter.put("/update/:_id", async (req,res)=>{
+    const product = await Product.findById(req.params._id)
+    if(product){
+        product.img = req.body.img || product.img
+        product.name = req.body.name || product.name
+        product.description = req.body.description || product.description
+        product.rating = req.body.rating || product.rating
+        product.reviews = req.body.reviews || product.reviews
+        product.price = req.body.price || product.price
+
+        console.log(product)
+
+        const updateProduct = await product.save()
+
+        res.send({ message: "Product Update",  product: updateProduct})
+    }else{
+        res.status(404).send({ message : "product not update" })
+    }
+})
+
 export default productRouter

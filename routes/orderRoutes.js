@@ -9,6 +9,13 @@ const stripe = Stripe("sk_test_51KJhEFFesKPGWiP3zNJLsNtGy1i22HxxfjJrvJuiYiDMKv8A
 
 const orderRouter = express.Router()
 
+orderRouter.get("/",async(req, res)=>{
+
+    const users = await Order.find()
+    res.send(users)
+
+})
+
 orderRouter.post("/", isAuth ,expressAsyncHandler( async (req, res)=>{
     const newOrder = new Order({
         orderItem : req.body.orderItem.map( x => ({ ...x, product:x._id }) ),
@@ -104,6 +111,29 @@ orderRouter.delete("/:id/delete", async (req, res)=>{
     }
 
 
+})
+
+orderRouter.put("/:id/delireved", async (req, res)=>{
+     
+    const order = await Order.findById(req.params.id)
+    if(order){
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+        order.paymentresult = {
+            id: req.body.id,
+            status: req.body.status,
+            update_time: req.body.update_time,
+            email_address: req.body.email_address,
+        };
+
+        console.log(order)
+
+        const updateOrder = await order.save()
+
+        res.send( { message: "Order paid", order : updateOrder } )
+    }else{
+        res.status(404).send({ message : "Payment not complete" })
+    }
 })
 
 

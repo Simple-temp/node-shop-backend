@@ -7,6 +7,29 @@ import { generateToken, isAuth } from "../Utilits.js";
 
 const userRouter = express.Router()
 
+userRouter.get("/",async(req, res)=>{
+
+    const users = await User.find()
+    res.send(users)
+
+})
+
+
+userRouter.delete("/:id/delete", async (req, res)=>{
+
+    const order = await User.findById(req.params.id)
+    if(order){
+        console.log(order)
+        await order.deleteOne()
+
+        res.send( { message: "deleted"} )
+    }else{
+        res.status(404).send({ message : "delete not complete" })
+    }
+
+
+})
+
 userRouter.post(
     "/signin",
     expressAsyncHandler(async (req, res) => {

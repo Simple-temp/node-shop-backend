@@ -8,6 +8,48 @@ productRouter.get("/",async(req, res)=>{
     const products = await Product.find()
     res.send(products)
 })
+
+productRouter.post("/", async (req, res)=>{
+    const newProduct = new Product({
+            slug : req.body.slug,
+            name : req.body.name,
+            category : req.body.category,
+            description : req.body.description,
+            price : req.body.price,
+            quantity : req.body.quantity || 1,
+            stock : req.body.stock,
+            reviews : req.body.reviews || 0,
+            rating : req.body.rating,
+            img : req.body.img,
+    })
+    console.log(newProduct)
+    const product = await newProduct.save()
+    res.send({
+        _id:product._id,
+        slug : product.slug,
+        name : product.name,
+        category : product.category,
+        description : product.description,
+        price : product.price,
+        quantity : product.quantity || 1,
+        stock : product.stock,
+        reviews : product.reviews || 0,
+        rating : product.rating,
+        img : product.img,
+    })
+})
+
+productRouter.delete("/:id/delete" , async (req,res)=>{
+    const product = await Product.findById(req.params.id) 
+    if(product){
+        console.log(product)
+        await product.deleteOne()
+        res.send( { message: "deleted"} )
+    }else{
+        res.status(404).send({ message : "delete not complete" })
+    }
+})
+
 const PAGE_SIZE=3
 productRouter.get("/search",expressAsyncHandler( async(req, res)=>{
     const {query} = req
@@ -126,7 +168,7 @@ productRouter.put("/update/:_id", async (req,res)=>{
         product.name = req.body.name || product.name
         product.description = req.body.description || product.description
         product.rating = req.body.rating || product.rating
-        product.reviews = req.body.reviews || product.reviews
+        product.stock = req.body.stock || product.stock
         product.price = req.body.price || product.price
 
         console.log(product)
